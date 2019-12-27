@@ -48,14 +48,20 @@ def charFrequency(letter):
     letterFrequency = frequencyTable.get(letter)
     return letterFrequency
 
-#def singleXOR
+def singleXOR(bytes):
+    print(bytes)
+
+    xor = ''.join(chr(byte ^ letter) for byte in bytes for letter in range(256))
+
+    print(xor)
+    
 
 def main():
     input = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
 
     bytes = raw_bytes(input)
 
-    
+    singleXOR(bytes)
 
     #b64Input = bytes2b64(bytes)
 
