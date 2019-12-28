@@ -1,13 +1,14 @@
 import base64
+import re
 
-def raw_bytes(input): 
+def hex2bytes(input): 
     
-    bytes = ''
+    
 
-    for byte in zip(input[0::2], input [1::2]): # read a byte from input
-        bytes += chr(int(''.join(byte),16))
-        
-    return bytes
+    #for byte in zip(input[0::2], input [1::2]): # read a byte from input
+     #   bytes += chr(int(''.join(byte),16))
+    byteString = bytes.fromhex(input).decode("ascii")  
+    return byteString
 
 def bytes2b64(bytes):
 
@@ -51,15 +52,20 @@ def charFrequency(letter):
 def singleXOR(bytes):
     print(bytes)
 
-    xor = ''.join(chr(byte ^ letter) for byte in bytes for letter in range(256))
+    xor = ''.join(chr(ord(byte) ^ letter) for byte in bytes for letter in range(256))
+
 
     print(xor)
+    print("----------------------------")
+    print(bytes)
+
+    return xor
     
 
 def main():
     input = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
 
-    bytes = raw_bytes(input)
+    bytes = hex2bytes(input)
 
     singleXOR(bytes)
 
