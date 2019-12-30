@@ -1,22 +1,16 @@
 import base64
 import re
+from binascii import hexlify, unhexlify
+from challenge2 import hex2bytes
 
-def hex2bytes(input): 
-    
-    
+## The best approach to count char frequency
+# give score to spaces is not cheating right????
 
-    #for byte in zip(input[0::2], input [1::2]): # read a byte from input
-     #   bytes += chr(int(''.join(byte),16))
-    byteString = bytes.fromhex(input).decode("ascii")  
-    return byteString
+# some pythn functions such as map, lambda and max .....
 
-def bytes2b64(bytes):
-
-    b64encode = base64.b64encode(str.encode(bytes))
-
-    return b64encode
 
 def charFrequency(letter):
+
 
     frequencyTable ={
         'E' : 12.0,
@@ -44,32 +38,54 @@ def charFrequency(letter):
         'X' : 0.17,
         'Q' : 0.11,
         'J' : 0.10,
-        'Z' : 0.07
+        'Z' : 0.07,
+        ' ' : 35 # is this the right thing to do with spaces?????
     }
-    letterFrequency = frequencyTable.get(letter)
+    letterFrequency = frequencyTable.get(letter,0)
+
     return letterFrequency
 
-def singleXOR(bytes):
-    print(bytes)
 
-    xor = ''.join(chr(ord(byte) ^ letter) for byte in bytes for letter in range(256))
+def stringScore(string):
+
+    totalScore = 0
+
+    for letter in string:
+
+        charScore = charFrequency(letter) #spaces count to char score????
+
+        totalScore += charScore
+
+    return totalScore
 
 
-    print(xor)
-    print("----------------------------")
-    print(bytes)
-
-    return xor
+def singleXOR(bytes1):
     
+    xorKey = ''
+    maxScore = 0
+
+    for key in range(256):
+
+        xor = ''.join(chr(byte ^ key) for byte in bytes1)
+
+        xorScore = stringScore(xor.upper())  #char frequency dict is in uppercase
+        
+        if xorScore > maxScore:
+            maxScore = xorScore
+            xorKey = chr(key)
+            xorString = xor
+
+    return xorString, xorKey
+
 
 def main():
     input = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"
 
     bytes = hex2bytes(input)
 
-    singleXOR(bytes)
+    msg,key = singleXOR(bytes)
 
-    #b64Input = bytes2b64(bytes)
+    print("Message: "+msg+"\nKey: "+key)
 
     
 

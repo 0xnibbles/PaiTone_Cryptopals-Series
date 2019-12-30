@@ -10,7 +10,6 @@ decode_input = ''.join([chr(int(''.join(c), 16)) for c in zip(input[0::2],input[
 
 #b64_string = base64.b64encode(bytes(bytearray.fromhex(input).decode(),"utf-8")) # another way of converting hex to b64
 
-
 '''
 
 def hex2b64(input):

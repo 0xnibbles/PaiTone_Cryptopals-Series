@@ -15,6 +15,9 @@ def fixedXOR(bytes1,bytes2):
     # Iterating each byte over both byte arrays and do a XOR operation.
     # Return as a byte array
 
+    if len(bytes1) != len(bytes2):
+        raise ValueError('Strings must be equal length')
+
     xor = bytes((char1 ^ char2) for char1,char2 in zip(bytes1,bytes2))
 
     return xor
@@ -31,7 +34,7 @@ def main():
 
     output = fixedXOR(bytes1,bytes2)
 
-    print(hexlify(output)) # out put the result as hexadecimal
+    print(hexlify(output)) # output the result as hexadecimal
 
     
 
