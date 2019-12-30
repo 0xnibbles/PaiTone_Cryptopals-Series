@@ -1,5 +1,3 @@
-import base64
-import re
 from binascii import hexlify, unhexlify
 from challenge2 import hex2bytes
 
@@ -41,6 +39,7 @@ def charFrequency(letter):
         'Z' : 0.07,
         ' ' : 35 # is this the right thing to do with spaces?????
     }
+
     letterFrequency = frequencyTable.get(letter,0)
 
     return letterFrequency
@@ -64,7 +63,7 @@ def singleXOR(bytes1):
     xorKey = ''
     maxScore = 0
 
-    for key in range(256):
+    for key in range(256): # iterating over the 255 ascii characters
 
         xor = ''.join(chr(byte ^ key) for byte in bytes1)
 
@@ -86,8 +85,6 @@ def main():
     msg,key = singleXOR(bytes)
 
     print("Message: "+msg+"\nKey: "+key)
-
-    
 
 
 if __name__ == "__main__":
