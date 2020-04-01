@@ -1,6 +1,8 @@
+import string
 from binascii import hexlify, unhexlify
 from challenge2 import hex2bytes
-from challenge3 import singleXOR, stringScore
+from challenge3 import singleXOR, stringScore, charFrequency
+
 
 def detect_SingleXOR(possibleStrings):
 
@@ -8,23 +10,15 @@ def detect_SingleXOR(possibleStrings):
     maxScore = 0
 
     for msg in possibleStrings.keys():
-        #print(msg)
 
         xorScore = stringScore(msg)
 
-        print("---------------------")
-        print(msg)
-        print(xorScore)
-        print("---------------------")
 
         if xorScore > maxScore:
             maxScore = xorScore
             xorString = msg
 
 
-        #print(possibleStrings)
-        #print(len(possibleStrings))
-    #print(xorString)
     return xorString
 
 def main():
@@ -34,7 +28,8 @@ def main():
         possibleStrings = {}
 
         for input in file:
-            
+
+            input = input.strip('\n')
             bytes = hex2bytes(input)
 
             string,letter = singleXOR(bytes)
@@ -43,13 +38,7 @@ def main():
 
         msg = detect_SingleXOR(possibleStrings)
 
-        #msg,key = singleXOR(bytes)
-        #print(possibleStrings.keys())
-
-        #print("Message: "+msg+"\nString: "+possibleStrings[msg])
-
-        
-
+        print("Message: "+msg+"\nString: "+possibleStrings[msg])
 
 if __name__ == "__main__":
     main()
