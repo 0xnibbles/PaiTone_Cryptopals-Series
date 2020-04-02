@@ -1,5 +1,4 @@
 import string
-from binascii import hexlify, unhexlify
 from challenge2 import hex2bytes
 from challenge3 import singleXOR, stringScore, charFrequency
 
