@@ -1,8 +1,10 @@
-# Cryptopals challenges
+# Pai_Cryptopals Challenges 
 
 Sharing my approach to solve crypto challenges.
 
-See only if you had tried it yet if don't want to lose all the fun. 
+See only if you had tried it yet if don't want to lose all the fun.
+
+The solves are built in  **Python**.
 
 #### Set 1
 - [x] Convert hex to base64
