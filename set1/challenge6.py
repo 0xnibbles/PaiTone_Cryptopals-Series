@@ -2,7 +2,8 @@
 import binascii
 import base64
 from challenge2 import hex2bytes
-from challenge3 import singleXOR
+from challenge3 import singleXOR, stringScore
+from challenge5 import repeated_KeyXOR
 
 keyMaxSize=40 # possible max key size
 
@@ -23,8 +24,8 @@ def hammingDistance(s1, s2):
 
 def get_probable_key_size(cipher): # smallest key size values
     
-    if keyMaxSize >= len(cipher)//4:
-        raise ValueError('Key Max Size length can\'t be lower of half the ciphertext')
+    if keyMaxSize >= len(cipher)//4: # floor division
+        raise ValueError('Key Max Size length can\'t be higher of a quarter half the ciphertext size')
 
     fcb = "" # first cipher bytes
     scb = "" # second cipher bytes
@@ -40,8 +41,6 @@ def get_probable_key_size(cipher): # smallest key size values
         tcb = cipher[2*keySize:len(cipher)-(len(cipher)-(3*keySize))]
         qcb = cipher[3*keySize:len(cipher)-(len(cipher)-(4*keySize))]
 
-        #print(str(keySize)+" --------------------------------")
-
         # normalizing each hamming distance and get arithmetic mean
         normalizedHammingDistance[keySize] = (hammingDistance(fcb,scb)+ hammingDistance(scb,tcb) + \
             hammingDistance(tcb,qcb)) / (keySize * 3) 
@@ -49,56 +48,102 @@ def get_probable_key_size(cipher): # smallest key size values
     # sorting by the lowest hamming distance and get each respective key
     problable_keysizes = {values: keys for values, keys in sorted(normalizedHammingDistance.items(), key=lambda value: value[1])[:4]}
     
-    #print(problable_keysizes)
-    return problable_keysizes.keys()
+    return list(problable_keysizes.keys()) # return key sizes as list
     
-
+# int guess_keys | bytes cipher
 def cipherBlocks(guess_keys,cipher):
 
-    blocks ={}
-    block =""
+    cipherText_blocks ={}
+    transpose_blocks = {}
+    transpose_cipher ={}
+    block =""    
     
     for keySize in guess_keys:                    # iterate each key
-        blocks[keySize] = []
+        cipherText_blocks[keySize] = []
+        transpose_cipher[keySize] = []
+        transpose_blocks[keySize]= []
+        lastIndex=0
+        block=b''
         
-        for k in range(0,len(cipher),keySize):    # split cipher blocks by key size
-            block_bytes = b''
-            for i in range(k,k):
-                block_bytes +=bytes([cipher[i]])
-                #block_bytes += bcipher[k]
-                #print(block)
-            blocks[keySize].append(block_bytes)
-        #key_blocks.append(blocks)
+        temp_blocks = [] # temporary list with block of each key
+        for k in range(0,len(cipher)+1,keySize):    # split cipher blocks by key size | #+1 because range 2n parameter is exclusive
+           
+            block = bytes(cipher[lastIndex:k]) 
+            transpose_block =b''
+            
+            for j in range(0,len(block)):
 
-    print(len(blocks[2]))
-    return blocks
+                if len(temp_blocks)-1 < j:
+                    temp_blocks.append(bytes([block[j]])) # square brackets are important. check doc why
+                else:
+                    temp_blocks[j] = temp_blocks[j] + bytes([block[j]])   
+
+            lastIndex = k # the reason for the +1 in the range condition "len(cipher)+1"
+
+            ''' 
+            -- Why not using len(cipher)? As range 2nd parameter is exclusive, block will contain chars
+            from lastIndex to k-1. This means is possible the last byte of the ciphertext to not be added to temp_blocks.
+            Using len(cipher)+1, the range will be until to the last byte of ciphertext
+            as is going to be -> (len(cipher) +1) -1(exclusive) = len(cipher), adding all the ct bytes
+
+            '''
+        transpose_blocks[keySize] = temp_blocks # dictionary with the respective list of block with their keys | key: keySize, value: key Size blocks
+            
+    return transpose_blocks
+
+
+
+def find_keys(blocks):
+    possible_keys=[]
+    best_score =0
+    key_xor = ""
+    for key in blocks:
+        xor_key = ""
+        plaintext = ""
+        for block in blocks[key]:
+            msg, key = singleXOR(block)
+            xor_key += key
+            plaintext += msg
+        possible_keys.append(xor_key)
+    return possible_keys
+
+def break_repeating_keyXor(ciphertext,possible_keys):
+
+    score =0
+    maxScore=0
+    plaintext = ""
+    cipher_key = ""
+    for key in possible_keys:
+        possible_plaintext = repeated_KeyXOR(ciphertext,key.encode()) # encoding key to XOR with ciphertext
+        score = stringScore(possible_plaintext.decode()) # decoding because possible_plaintext is in bytes but stringScore uses ASCII chars
+        if score > maxScore:
+            maxScore = score
+            plaintext = possible_plaintext.decode()
+            cipher_key = key
     
-def break_repeating_keyXor(blocks):
-    
-    for bytes_blocks in blocks:
-        #print(bytes_blocks)
-        msg, key = singleXOR(bytes_blocks)
-        #print(key+": "+msg)
+    return cipher_key,plaintext
 
 def main():
 
     s1 = "this is a test".encode()
     s2 = "wokka wokka!!!".encode()
-    #print(hammingDistance(s1,s2))
+    #print(hammingDistance(s1,s2)) # test if the hamming distance function
     
     with open("6.txt") as file:
 
         cipher = ""
         for input in file:
             cipher += input.strip('\n')
-        cipher = base64.b64decode(cipher)
-        
+        cipher = base64.b64decode(cipher)        
 
         ## breaking repeating xor....
         guess_keys = get_probable_key_size(cipher)
         blocks = cipherBlocks(guess_keys,cipher)
-        #print(blocks[0])
-        #break_repeating_keyXor(blocks)
+        possibleKeys = find_keys(blocks)
+        key,plaintext = break_repeating_keyXor(cipher,possibleKeys)
+
+        print("Key: "+key+"\n\nOriginal Message:\n\n"+plaintext)
 
 if __name__ == "__main__":
     main() 
+

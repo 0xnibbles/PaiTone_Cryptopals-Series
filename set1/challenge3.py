@@ -56,7 +56,7 @@ def stringScore(string):
 
     for letter in string:                   
         
-        if letter in str(validChars()): # check if string has a "human" readble char
+        if letter in str(validChars()): # check if string has a "human" readable char
 
             charScore = charFrequency(letter.upper()) #char frequency dict is in uppercase          
             totalScore += charScore
