@@ -71,12 +71,12 @@ def cipherBlocks(guess_keys,cipher):
             block = bytes(cipher[lastIndex:k]) 
             transpose_block =b''
             
-            for j in range(0,len(block)):
+            for j in range(0,len(block)): # transpose bytes while diving cipher in key size blocks
 
-                if len(temp_blocks)-1 < j:
+                if len(temp_blocks)-1 < j: # block size key is not added to the dict yet | the first time trnsposing a key size block
                     temp_blocks.append(bytes([block[j]])) # square brackets are important. check doc why
                 else:
-                    temp_blocks[j] = temp_blocks[j] + bytes([block[j]])   
+                    temp_blocks[j] +=  bytes([block[j]])   
 
             lastIndex = k # the reason for the +1 in the range condition "len(cipher)+1"
 
