@@ -13,7 +13,7 @@ The solves are built in  **Python**.
 - [x] Detect single-character XOR
 - [x] Implement repeating-key XOR
 - [x] Break repeating-key XOR - **_Hamming Distance, Normalizing Distances, Transpose, Single-Character XOR, ETAOIN SHRDLU_**
-- [ ] AES in ECB mode
+- [x] AES in ECB mode
 - [ ] Detect AES in ECB mode
 
 #### Set 2
