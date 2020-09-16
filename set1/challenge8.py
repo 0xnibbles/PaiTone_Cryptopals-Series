@@ -1,53 +1,47 @@
-import base64
-from challenge3 import stringScore
-from challenge6 import hammingDistance
-import pprint
 
+'''
+    According to the ECB mode, if there are identical blocks of plaintext, these will result in
+    identical ciphertext blocks. So, the approach here is to detect which is the ciphertext
+    where exists identical ou equal blocks.
+    The ciphertext with more equal blocks is more likely to be encrypted with AES-ECB
+'''
 
-#testing approach
 def detect_AES_ECB(ciphertext_list):
 
     ct_blocks = {}
-    for j in range(0,len(ciphertext_list)):
-        print(j)
-        print("alala")
-        ct_blocks[j] = 0
-        for ct in ciphertext_list:
-            repeated_Blocks = []
-            ct_score = 0
-            for i in range(0,len(ct),16):
-                block = ct[i:i+16]
-                #print(block)
-                
-                if block in repeated_Blocks:
-                    #repeated_Blocks[block] +=1
-                    ct_score += 1
-                    ct_blocks[j] +=1
-                    print("entraaaaaaaaaa")
-                    print(ct_blocks[j])
-                else:
-                    repeated_Blocks.append(block)
-        #ct_blocks[j] = ct_score
-        #print(ct_score)
-        #print(ct_blocks)
+    
+    for i in range(0,len(ciphertext_list)): # iterating each ciphertext
 
-    #ct_ECB_index = sorted(ct_blocks, key=lambda x: ct_blocks[x], reverse=True)[0]
-    #print(ciphertext_list[ct_ECB_index])
-    print(ct_blocks)
+        ct = ciphertext_list[i] # selecting a ciphertext from the list
+        
+        repeated_Blocks = []    # list to save repeated block of each ciphertext
+        ct_score = 0            # number of repeated blocks
+        for j in range(0,len(ct),16):   # chunks of 16 bytes
+            block = ct[j:j+16]          #  cyphertext block of 16 bytes
+            
+            if block in repeated_Blocks:    # if the block is already in the list it means a similar ciphertext has been appeared
+                ct_score += 1
+            else:
+                repeated_Blocks.append(block)
+
+        ct_blocks[i] = ct_score     # adding the number of repeated related to index of the ciphertext in the ciphertext_list
+
+    ct_ECB_index = sorted(ct_blocks, key=lambda x: ct_blocks[x], reverse=True)[0] # sorting for the index with the most block reptitions in reverse order
+    return ct_ECB_index, ct_blocks[ct_ECB_index]
         
 
 
 def main():
     input =""
     ciphertext= []
+    ecb_score = 0
     with open("8.txt") as file:
         for line in file:
             ciphertext.append(line.strip("\n").encode())
-        #content = [line.strip("\n") for line in file]
-    #print(content)
-    #ciphertext = input.encode()
-    #pprint.pprint(ciphertext[:12])
-    detect_AES_ECB(ciphertext)
+    
+    aes_ecb_index, ecb_score = detect_AES_ECB(ciphertext)
+    print("\nThe ciphertex encrypted with AES-ECB is:\n\n"+ciphertext[aes_ecb_index].decode())
+    print("\nRepeated blocks: "+str(ecb_score))
 
     
 
