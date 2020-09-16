@@ -3,7 +3,7 @@
     According to the ECB mode, if there are identical blocks of plaintext, these will result in
     identical ciphertext blocks. So, the approach here is to detect which is the ciphertext
     where exists identical or equal blocks.
-    The ciphertext with more equal blocks is more likely to be encrypted with AES-ECB
+    The ciphertext with the most number of equal blocks is more likely to be encrypted with AES-ECB.
 '''
 
 def detect_AES_ECB(ciphertext_list):
